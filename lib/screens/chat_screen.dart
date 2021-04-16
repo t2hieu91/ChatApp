@@ -2,13 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatelessWidget {
+  final collectionPath = 'chats/QJ5RLyBFrFuyzZ3U4Xq4/messages';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder(
-        stream: Firestore.instance
-            .collection('chats/QJ5RLyBFrFuyzZ3U4Xq4/messages')
-            .snapshots(),
+        stream: Firestore.instance.collection(collectionPath).snapshots(),
         builder: (ctx, streamSnapShot) {
           if (streamSnapShot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -27,7 +26,13 @@ class ChatScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () {
+          Firestore.instance.collection(collectionPath).add(
+            {
+              'text': 'This was added by Button !',
+            },
+          );
+        },
       ),
     );
   }
