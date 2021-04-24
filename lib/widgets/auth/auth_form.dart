@@ -3,13 +3,15 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
-  AuthForm(this.submitForm);
+  AuthForm(this.submitForm, this.isLoading);
 
+  final bool isLoading;
   final void Function(
     String email,
     String username,
     String password,
     bool isLogin,
+    BuildContext ctx,
   ) submitForm;
 
   @override
@@ -29,7 +31,8 @@ class _AuthFormState extends State<AuthForm> {
 
     if (isValid) {
       _formKey.currentState.save();
-      widget.submitForm(_userEmail, _userName, _userPassword, _isLogin);
+      widget.submitForm(_userEmail.trim(), _userName.trim(),
+          _userPassword.trim(), _isLogin, context);
     }
   }
 
@@ -90,25 +93,28 @@ class _AuthFormState extends State<AuthForm> {
                 SizedBox(
                   height: 12,
                 ),
-                RaisedButton(
-                  child: Text(
-                    _isLogin ? 'Login' : 'Signup',
+                if (widget.isLoading) CircularProgressIndicator(),
+                if (!widget.isLoading)
+                  RaisedButton(
+                    child: Text(
+                      _isLogin ? 'Login' : 'Signup',
+                    ),
+                    onPressed: _trySubmit,
                   ),
-                  onPressed: _trySubmit,
-                ),
-                FlatButton(
-                  textColor: Theme.of(context).primaryColor,
-                  child: Text(
-                    _isLogin
-                        ? 'Create New Account'
-                        : 'I already have an account',
+                if (!widget.isLoading)
+                  FlatButton(
+                    textColor: Theme.of(context).primaryColor,
+                    child: Text(
+                      _isLogin
+                          ? 'Create New Account'
+                          : 'I already have an account',
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isLogin = !_isLogin;
+                      });
+                    },
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _isLogin = !_isLogin;
-                    });
-                  },
-                ),
               ],
             ),
           ),
